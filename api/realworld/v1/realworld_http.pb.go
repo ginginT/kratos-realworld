@@ -20,20 +20,20 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationRealworldLogin = "/realworld.v1.Realworld/Login"
+const OperationRealworldRegister = "/realworld.v1.Realworld/Register"
 const OperationRealworldSayHello = "/realworld.v1.Realworld/SayHello"
-const OperationRealworldUsers = "/realworld.v1.Realworld/Users"
 
 type RealworldHTTPServer interface {
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
+	Register(context.Context, *RegisterRequest) (*RegisterReply, error)
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
-	Users(context.Context, *UsersRequest) (*UsersReply, error)
 }
 
 func RegisterRealworldHTTPServer(s *http.Server, srv RealworldHTTPServer) {
 	r := s.Route("/")
 	r.GET("/realworld/{name}", _Realworld_SayHello0_HTTP_Handler(srv))
 	r.POST("/api/users/login", _Realworld_Login0_HTTP_Handler(srv))
-	r.POST("/api/users", _Realworld_Users0_HTTP_Handler(srv))
+	r.POST("/api/register", _Realworld_Register0_HTTP_Handler(srv))
 }
 
 func _Realworld_SayHello0_HTTP_Handler(srv RealworldHTTPServer) func(ctx http.Context) error {
@@ -77,29 +77,29 @@ func _Realworld_Login0_HTTP_Handler(srv RealworldHTTPServer) func(ctx http.Conte
 	}
 }
 
-func _Realworld_Users0_HTTP_Handler(srv RealworldHTTPServer) func(ctx http.Context) error {
+func _Realworld_Register0_HTTP_Handler(srv RealworldHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in UsersRequest
+		var in RegisterRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationRealworldUsers)
+		http.SetOperation(ctx, OperationRealworldRegister)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Users(ctx, req.(*UsersRequest))
+			return srv.Register(ctx, req.(*RegisterRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*UsersReply)
+		reply := out.(*RegisterReply)
 		return ctx.Result(200, reply)
 	}
 }
 
 type RealworldHTTPClient interface {
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginReply, err error)
+	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *RegisterReply, err error)
 	SayHello(ctx context.Context, req *HelloRequest, opts ...http.CallOption) (rsp *HelloReply, err error)
-	Users(ctx context.Context, req *UsersRequest, opts ...http.CallOption) (rsp *UsersReply, err error)
 }
 
 type RealworldHTTPClientImpl struct {
@@ -123,6 +123,19 @@ func (c *RealworldHTTPClientImpl) Login(ctx context.Context, in *LoginRequest, o
 	return &out, err
 }
 
+func (c *RealworldHTTPClientImpl) Register(ctx context.Context, in *RegisterRequest, opts ...http.CallOption) (*RegisterReply, error) {
+	var out RegisterReply
+	pattern := "/api/register"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationRealworldRegister))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *RealworldHTTPClientImpl) SayHello(ctx context.Context, in *HelloRequest, opts ...http.CallOption) (*HelloReply, error) {
 	var out HelloReply
 	pattern := "/realworld/{name}"
@@ -130,19 +143,6 @@ func (c *RealworldHTTPClientImpl) SayHello(ctx context.Context, in *HelloRequest
 	opts = append(opts, http.Operation(OperationRealworldSayHello))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *RealworldHTTPClientImpl) Users(ctx context.Context, in *UsersRequest, opts ...http.CallOption) (*UsersReply, error) {
-	var out UsersReply
-	pattern := "/api/users"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationRealworldUsers))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

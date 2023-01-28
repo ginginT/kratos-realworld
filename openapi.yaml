@@ -7,16 +7,16 @@ info:
     description: The greeting service definition.
     version: 0.0.1
 paths:
-    /api/users:
+    /api/register:
         post:
             tags:
                 - Realworld
-            operationId: Realworld_Users
+            operationId: Realworld_Register
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/realworld.v1.UsersRequest'
+                            $ref: '#/components/schemas/realworld.v1.RegisterRequest'
                 required: true
             responses:
                 "200":
@@ -24,7 +24,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/realworld.v1.UsersReply'
+                                $ref: '#/components/schemas/realworld.v1.RegisterReply'
     /api/users/login:
         post:
             tags:
@@ -87,6 +87,25 @@ components:
                     type: string
                 password:
                     type: string
+        realworld.v1.RegisterReply:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/realworld.v1.User'
+        realworld.v1.RegisterRequest:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/realworld.v1.RegisterRequest_User'
+        realworld.v1.RegisterRequest_User:
+            type: object
+            properties:
+                username:
+                    type: string
+                email:
+                    type: string
+                password:
+                    type: string
         realworld.v1.User:
             type: object
             properties:
@@ -99,25 +118,6 @@ components:
                 bio:
                     type: string
                 image:
-                    type: string
-        realworld.v1.UsersReply:
-            type: object
-            properties:
-                user:
-                    $ref: '#/components/schemas/realworld.v1.User'
-        realworld.v1.UsersRequest:
-            type: object
-            properties:
-                user:
-                    $ref: '#/components/schemas/realworld.v1.UsersRequest_User'
-        realworld.v1.UsersRequest_User:
-            type: object
-            properties:
-                username:
-                    type: string
-                email:
-                    type: string
-                password:
                     type: string
 tags:
     - name: Realworld

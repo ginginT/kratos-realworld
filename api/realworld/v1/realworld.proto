@@ -22,9 +22,9 @@ service Realworld {
     };
   }
 
-  rpc Users (UsersRequest) returns (UsersReply) {
+  rpc Register (RegisterRequest) returns (RegisterReply) {
     option (google.api.http) = {
-      post: "/api/users",
+      post: "/api/register",
       body: "*"
     };
   }
@@ -60,7 +60,7 @@ message LoginReply {
   User user = 1;
 }
 
-message UsersRequest {
+message RegisterRequest {
   message User {
     string username = 1;
     string email = 2;
@@ -69,7 +69,7 @@ message UsersRequest {
   User user = 1;
 }
 
-message UsersReply {
+message RegisterReply {
   User user = 1;
 }
 

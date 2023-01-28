@@ -25,7 +25,7 @@ type RealworldClient interface {
 	// Sends a greeting
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
-	Users(ctx context.Context, in *UsersRequest, opts ...grpc.CallOption) (*UsersReply, error)
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error)
 }
 
 type realworldClient struct {
@@ -54,9 +54,9 @@ func (c *realworldClient) Login(ctx context.Context, in *LoginRequest, opts ...g
 	return out, nil
 }
 
-func (c *realworldClient) Users(ctx context.Context, in *UsersRequest, opts ...grpc.CallOption) (*UsersReply, error) {
-	out := new(UsersReply)
-	err := c.cc.Invoke(ctx, "/realworld.v1.Realworld/Users", in, out, opts...)
+func (c *realworldClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error) {
+	out := new(RegisterReply)
+	err := c.cc.Invoke(ctx, "/realworld.v1.Realworld/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ type RealworldServer interface {
 	// Sends a greeting
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
-	Users(context.Context, *UsersRequest) (*UsersReply, error)
+	Register(context.Context, *RegisterRequest) (*RegisterReply, error)
 	mustEmbedUnimplementedRealworldServer()
 }
 
@@ -84,8 +84,8 @@ func (UnimplementedRealworldServer) SayHello(context.Context, *HelloRequest) (*H
 func (UnimplementedRealworldServer) Login(context.Context, *LoginRequest) (*LoginReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedRealworldServer) Users(context.Context, *UsersRequest) (*UsersReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Users not implemented")
+func (UnimplementedRealworldServer) Register(context.Context, *RegisterRequest) (*RegisterReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedRealworldServer) mustEmbedUnimplementedRealworldServer() {}
 
@@ -136,20 +136,20 @@ func _Realworld_Login_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Realworld_Users_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UsersRequest)
+func _Realworld_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RealworldServer).Users(ctx, in)
+		return srv.(RealworldServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/realworld.v1.Realworld/Users",
+		FullMethod: "/realworld.v1.Realworld/Register",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RealworldServer).Users(ctx, req.(*UsersRequest))
+		return srv.(RealworldServer).Register(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -170,8 +170,8 @@ var Realworld_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Realworld_Login_Handler,
 		},
 		{
-			MethodName: "Users",
-			Handler:    _Realworld_Users_Handler,
+			MethodName: "Register",
+			Handler:    _Realworld_Register_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
